@@ -1,0 +1,224 @@
+{
+  "Resources": {
+    "cdkparallelsfnuserid005EDAAD": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "Groups": [
+          {
+            "Ref": "cdkparallelsfngroupidF2A19C44"
+          }
+        ],
+        "ManagedPolicyArns": [
+          {
+            "Ref": "cdkparallelsfndataaccesspolicyidD58A2D84"
+          }
+        ],
+        "UserName": "cdk-parallel-sfn-iam-user"
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-user-id/Resource"
+      }
+    },
+    "cdkparallelsfngroupidF2A19C44": {
+      "Type": "AWS::IAM::Group",
+      "Properties": {
+        "GroupName": "cdk-parallel-sfn-iam-group"
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-group-id/Resource"
+      }
+    },
+    "cdkparallelsfndataaccesspolicyidD58A2D84": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "iam:DeleteAccessKey",
+                "iam:GetAccessKeyLastUsed",
+                "iam:UpdateAccessKey",
+                "iam:CreateAccessKey",
+                "iam:ListAccessKey"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:iam::926405661193:user/${aws:username}",
+                "arn:aws:iam::926405661193:user/parallel-sfn/${aws:username}"
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "",
+        "Path": "/"
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-data-access-policy-id/Resource"
+      }
+    },
+    "parallelsfnstateMachinepolicyidA8376270": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetBucket*",
+                "s3:ListBucket",
+                "s3:GetBucketLocation",
+                "s3:GetObject"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:s3:::parallel-sfn-dev-ap-south-1"
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:AbortMultipartUpload",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListMultipartUploadParts",
+                "s3:PutObject"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::parallel-sfn-dev-ap-south-1",
+                "arn:aws:s3:::parallel-sfn-dev-ap-south-1/*"
+              ]
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": "arn:aws:lambda:dev:926405661193:function:cdk-parallel-sfn-*"
+            },
+            {
+              "Action": [
+                "kms:Decrept",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:kms:ap-south-1:926405661193:key/5b01bf36-8fa9-48f9-9c51-31f3dac95ece"
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Description": "",
+        "Path": "/"
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgi-cdk-parallel-sfn/parallel-sfn-stateMachine-policy-id/Resource"
+      }
+    },
+    "parallelsfnstatemachineroleid591971A3": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.ap-south-1.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Ref": "parallelsfnstateMachinepolicyidA8376270"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgi-cdk-parallel-sfn/parallel-sfn-statemachine-role-id/Resource"
+      }
+    },
+    "cdkparallelsfnstateMachineId83B2AEF2": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "parallelsfnstatemachineroleid591971A3",
+            "Arn"
+          ]
+        },
+        "DefinitionString": "{\"StartAt\":\"StartState\",\"States\":{\"StartState\":{\"Type\":\"Pass\",\"ResultPath\":\"$.Execution\",\"Parameters\":{\"Execution.$\":\"$$.Execution.Id\"},\"Next\":\"Step Function Execution Complete.\"},\"Step Function Execution Complete.\":{\"Type\":\"Succeed\"}}}",
+        "StateMachineName": "cdk-parallel-sfn-stateMachine"
+      },
+      "DependsOn": [
+        "parallelsfnstatemachineroleid591971A3"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-stateMachine-Id/Resource"
+      }
+    },
+    "parallelsfndevBE27A30F": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "AccessControl": "Private",
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "KMSMasterKeyID": "arn:aws:kms:ap-south-1:926405661193:key/5b01bf36-8fa9-48f9-9c51-31f3dac95ece",
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        },
+        "BucketName": "parallel-sfn-dev-ap-south-1",
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 1
+              },
+              "NoncurrentVersionExpirationInDays": 1,
+              "Status": "Enabled"
+            }
+          ]
+        },
+        "MetricsConfigurations": [
+          {
+            "Id": "erm-parallel-sfn-dev-ap-south-1"
+          }
+        ],
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "pgi-cdk-parallel-sfn/parallel-sfn-dev/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/1VOywqDMBD8Fu9xrfXSY6mHngRR+gFhXWuqJpIHRUL+vUYptKd5LLMzOeTFBfLkyt8mxW7MPCpN4FvLcWQNGeU0EiuVNFY7tKzs5dcNLIa84DP4hyEdbzvetXJLVAepuORP6mo1CVyj/W80aqL97YaBGUtL7yRasVWCr7kxrHWIRB3bRlmqOA5C7olfvSUL8DeHI+0jDxZCYPVqByWzAvITnJOXESLVTloxEzQHfgB0NxKRBQEAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "pgi-cdk-parallel-sfn/CDKMetadata/Default"
+      }
+    }
+  }
+}

@@ -1,0 +1,392 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Construct",
+          "version": "1.138.1"
+        }
+      },
+      "pgi-cdk-parallel-sfn": {
+        "id": "pgi-cdk-parallel-sfn",
+        "path": "pgi-cdk-parallel-sfn",
+        "children": {
+          "cdk-parallel-sfn-user-id": {
+            "id": "cdk-parallel-sfn-user-id",
+            "path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-user-id",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-user-id/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {
+                    "groups": [
+                      {
+                        "Ref": "cdkparallelsfngroupidF2A19C44"
+                      }
+                    ],
+                    "managedPolicyArns": [
+                      {
+                        "Ref": "cdkparallelsfndataaccesspolicyidD58A2D84"
+                      }
+                    ],
+                    "userName": "cdk-parallel-sfn-iam-user"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "version": "1.138.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.User",
+              "version": "1.138.1"
+            }
+          },
+          "cdk-parallel-sfn-group-id": {
+            "id": "cdk-parallel-sfn-group-id",
+            "path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-group-id",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-group-id/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Group",
+                  "aws:cdk:cloudformation:props": {
+                    "groupName": "cdk-parallel-sfn-iam-group"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnGroup",
+                  "version": "1.138.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Group",
+              "version": "1.138.1"
+            }
+          },
+          "cdk-parallel-sfn-data-access-policy-id": {
+            "id": "cdk-parallel-sfn-data-access-policy-id",
+            "path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-data-access-policy-id",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-data-access-policy-id/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::ManagedPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "iam:DeleteAccessKey",
+                            "iam:GetAccessKeyLastUsed",
+                            "iam:UpdateAccessKey",
+                            "iam:CreateAccessKey",
+                            "iam:ListAccessKey"
+                          ],
+                          "Effect": "Allow",
+                          "Resource": [
+                            "arn:aws:iam::926405661193:user/${aws:username}",
+                            "arn:aws:iam::926405661193:user/parallel-sfn/${aws:username}"
+                          ]
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "",
+                    "path": "/"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnManagedPolicy",
+                  "version": "1.138.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.ManagedPolicy",
+              "version": "1.138.1"
+            }
+          },
+          "cdk-parallel-sfn-keyId": {
+            "id": "cdk-parallel-sfn-keyId",
+            "path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-keyId",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "1.138.1"
+            }
+          },
+          "parallel-sfn-stateMachine-policy-id": {
+            "id": "parallel-sfn-stateMachine-policy-id",
+            "path": "pgi-cdk-parallel-sfn/parallel-sfn-stateMachine-policy-id",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "pgi-cdk-parallel-sfn/parallel-sfn-stateMachine-policy-id/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::ManagedPolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "s3:GetBucket*",
+                            "s3:ListBucket",
+                            "s3:GetBucketLocation",
+                            "s3:GetObject"
+                          ],
+                          "Effect": "Allow",
+                          "Resource": "arn:aws:s3:::parallel-sfn-dev-ap-south-1"
+                        },
+                        {
+                          "Action": [
+                            "s3:GetObject*",
+                            "s3:AbortMultipartUpload",
+                            "s3:ListBucketMultipartUploads",
+                            "s3:ListMultipartUploadParts",
+                            "s3:PutObject"
+                          ],
+                          "Effect": "Allow",
+                          "Resource": [
+                            "arn:aws:s3:::parallel-sfn-dev-ap-south-1",
+                            "arn:aws:s3:::parallel-sfn-dev-ap-south-1/*"
+                          ]
+                        },
+                        {
+                          "Action": "lambda:InvokeFunction",
+                          "Effect": "Allow",
+                          "Resource": "arn:aws:lambda:dev:926405661193:function:cdk-parallel-sfn-*"
+                        },
+                        {
+                          "Action": [
+                            "kms:Decrept",
+                            "kms:Encrypt",
+                            "kms:ReEncrypt*",
+                            "kms:GenerateDataKey*"
+                          ],
+                          "Effect": "Allow",
+                          "Resource": [
+                            "arn:aws:kms:ap-south-1:926405661193:key/5b01bf36-8fa9-48f9-9c51-31f3dac95ece"
+                          ]
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "",
+                    "path": "/"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnManagedPolicy",
+                  "version": "1.138.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.ManagedPolicy",
+              "version": "1.138.1"
+            }
+          },
+          "parallel-sfn-statemachine-role-id": {
+            "id": "parallel-sfn-statemachine-role-id",
+            "path": "pgi-cdk-parallel-sfn/parallel-sfn-statemachine-role-id",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "pgi-cdk-parallel-sfn/parallel-sfn-statemachine-role-id/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "states.ap-south-1.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Ref": "parallelsfnstateMachinepolicyidA8376270"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "version": "1.138.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "1.138.1"
+            }
+          },
+          "StartState": {
+            "id": "StartState",
+            "path": "pgi-cdk-parallel-sfn/StartState",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "version": "1.138.1"
+            }
+          },
+          "Step Function Execution Complete.": {
+            "id": "Step Function Execution Complete.",
+            "path": "pgi-cdk-parallel-sfn/Step Function Execution Complete.",
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.Succeed",
+              "version": "1.138.1"
+            }
+          },
+          "cdk-parallel-sfn-stateMachine-Id": {
+            "id": "cdk-parallel-sfn-stateMachine-Id",
+            "path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-stateMachine-Id",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "pgi-cdk-parallel-sfn/cdk-parallel-sfn-stateMachine-Id/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "parallelsfnstatemachineroleid591971A3",
+                        "Arn"
+                      ]
+                    },
+                    "definitionString": "{\"StartAt\":\"StartState\",\"States\":{\"StartState\":{\"Type\":\"Pass\",\"ResultPath\":\"$.Execution\",\"Parameters\":{\"Execution.$\":\"$$.Execution.Id\"},\"Next\":\"Step Function Execution Complete.\"},\"Step Function Execution Complete.\":{\"Type\":\"Succeed\"}}}",
+                    "stateMachineName": "cdk-parallel-sfn-stateMachine"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "version": "1.138.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "version": "1.138.1"
+            }
+          },
+          "parallel-sfn-dev": {
+            "id": "parallel-sfn-dev",
+            "path": "pgi-cdk-parallel-sfn/parallel-sfn-dev",
+            "children": {
+              "Notifications": {
+                "id": "Notifications",
+                "path": "pgi-cdk-parallel-sfn/parallel-sfn-dev/Notifications",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Construct",
+                  "version": "1.138.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "pgi-cdk-parallel-sfn/parallel-sfn-dev/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "accessControl": "Private",
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "aws:kms",
+                            "kmsMasterKeyId": "arn:aws:kms:ap-south-1:926405661193:key/5b01bf36-8fa9-48f9-9c51-31f3dac95ece"
+                          }
+                        }
+                      ]
+                    },
+                    "bucketName": "parallel-sfn-dev-ap-south-1",
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "abortIncompleteMultipartUpload": {
+                            "daysAfterInitiation": 1
+                          },
+                          "noncurrentVersionExpirationInDays": 1,
+                          "status": "Enabled"
+                        }
+                      ]
+                    },
+                    "metricsConfigurations": [
+                      {
+                        "id": "erm-parallel-sfn-dev-ap-south-1"
+                      }
+                    ],
+                    "ownershipControls": {
+                      "rules": [
+                        {
+                          "objectOwnership": "BucketOwnerEnforced"
+                        }
+                      ]
+                    },
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    },
+                    "versioningConfiguration": {
+                      "status": "Enabled"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "version": "1.138.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "version": "1.138.1"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "pgi-cdk-parallel-sfn/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "pgi-cdk-parallel-sfn/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnResource",
+                  "version": "1.138.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.Construct",
+              "version": "1.138.1"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "1.138.1"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "@aws-cdk/core.App",
+      "version": "1.138.1"
+    }
+  }
+}
